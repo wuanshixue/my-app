@@ -30,8 +30,8 @@ export default function Navbar() {
                                 <Link href="/reviews/africa" className="block px-4 py-2 hover:bg-gray-100">
                                     Africa
                                 </Link>
-                                <Link href="/reviews/asia" className="block px-4 py-2 hover:bg-gray-100">
-                                    Asia
+                                <Link href="/reviews/asian" className="block px-4 py-2 hover:bg-gray-100">
+                                    Asian
                                 </Link>
                                 <Link href="/reviews/latin-america" className="block px-4 py-2 hover:bg-gray-100">
                                     Latin America

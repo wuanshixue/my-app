@@ -1,11 +1,17 @@
+// src/lib/mdx.js
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-const contentDir = path.join(process.cwd(), "content");
+const contentDir = path.join(process.cwd(), "src/content");
 
 export function getPosts(region) {
     const dir = path.join(contentDir, region);
+
+    if (!fs.existsSync(dir)) {
+        return [];
+    }
+
     const files = fs.readdirSync(dir);
 
     return files.map((file) => {
@@ -15,7 +21,7 @@ export function getPosts(region) {
 
         return {
             slug: file.replace(/\.mdx?$/, ""),
-            ...data,
+            frontmatter: data,
         };
     });
 }
@@ -23,7 +29,7 @@ export function getPosts(region) {
 export function getPostBySlug(region, slug) {
     const filePath = path.join(contentDir, region, `${slug}.mdx`);
     const source = fs.readFileSync(filePath, "utf-8");
-    const { data, content } = matter(source);
+    const { content, data } = matter(source);
 
-    return { meta: { ...data, slug }, content };
+    return { content, frontmatter: data };
 }
