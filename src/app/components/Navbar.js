@@ -11,7 +11,7 @@ export default function Navbar() {
     return (
         <header className="border-b bg-white shadow-sm">
             {/* 第一行：导航菜单 */}
-            <div className="flex justify-between items-center px-6 py-4">
+            <div className="flex justify-center items-center px-6 py-4 space-x-6">
                 <nav className="flex items-center space-x-6 font-semibold">
                     <Link href="/contact" className="hover:text-gray-600">
                         CONTACT
@@ -102,7 +102,7 @@ export default function Navbar() {
 
             {/* 第二行：站点标题 */}
             <div className="text-center py-6">
-                <h1 className="text-3xl font-serif">Coffee Wuanshixue</h1>
+                <Link href="/" className="text-3xl font-serif">Coffee Wuanshixue</Link>
                 <p className="text-gray-600">Coffee: Music in a cup!</p>
             </div>
         </header>
