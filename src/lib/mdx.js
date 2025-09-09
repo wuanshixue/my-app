@@ -6,17 +6,15 @@ const contentDir = path.join(process.cwd(), "src/content");
 
 export function getPosts(region) {
     const dir = path.join(contentDir, region);
-    if (!fs.existsSync(dir)) return [];
-
     const files = fs.readdirSync(dir);
 
     return files.map((file) => {
         const filePath = path.join(dir, file);
         const source = fs.readFileSync(filePath, "utf8");
-        const { data } = matter(source);
+        const { data:frontmatter } = matter(source);
         return {
             slug: file.replace(/\.mdx?$/, ""),
-            meta: data,
+            frontmatter,
         };
     });
 }

@@ -1,54 +1,51 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { remark } from "remark";
-import html from "remark-html";
 
-const postsDirectory = path.join(process.cwd(), "posts");
+const contentDir = path.join(process.cwd(), "src", "content");
 
-export function getAllPosts() {
-    const fileNames = fs.readdirSync(postsDirectory);
+/**
+ * 获取某个地区的所有文章
+ */
+export function getPostsByRegion(region) {
+    const regionDir = path.join(contentDir, region);
 
-    const posts = fileNames
-        .filter((fileName) => fileName.endsWith(".md"))
-        .map((fileName) => {
-            const slug = fileName.replace(/\.md$/, "");
-            const filePath = path.join(postsDirectory, fileName);
+    if (!fs.existsSync(regionDir)) return [];
 
-            const fileContents = fs.readFileSync(filePath, "utf8");
-            const { data } = matter(fileContents);
+    const fileNames = fs.readdirSync(regionDir);
+
+    return fileNames
+        .filter((file) => file.endsWith(".md") || file.endsWith(".mdx"))
+        .map((file) => {
+            const slug = file.replace(/\.mdx?$/, "");
+            const fullPath = path.join(regionDir, file);
+            const fileContents = fs.readFileSync(fullPath, "utf8");
+            const { data: frontmatter } = matter(fileContents);
 
             return {
                 slug,
-                title: data.title || slug,
-                date: data.date || "未设置日期",
+                region,
+                frontmatter,
             };
         });
-
-    return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
 /**
- * 获取单篇文章（Markdown 转 HTML）
+ * 获取所有文章（跨地区）
  */
-export async function getPostData(slug) {
-    const filePath = path.join(postsDirectory, `${slug}.md`);
+export function getAllPosts() {
+    const regions = fs.readdirSync(contentDir).filter((file) =>
+        fs.statSync(path.join(contentDir, file)).isDirectory()
+    );
 
-    if (!fs.existsSync(filePath)) {
-        throw new Error(`找不到文章: ${slug}`);
-    }
+    let posts = [];
 
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    const { data, content } = matter(fileContents);
+    regions.forEach((region) => {
+        posts = posts.concat(getPostsByRegion(region));
+    });
 
-    // 把 markdown 转成 HTML
-    const processedContent = await remark().use(html).process(content);
-    const contentHtml = processedContent.toString();
-
-    return {
-        slug,
-        title: data.title || slug,
-        date: data.date || "未设置日期",
-        contentHtml, // ✅ 这里返回 HTML
-    };
+    // 按日期倒序排序
+    return posts.sort(
+        (a, b) => new Date(b.frontmatter.date) - new Date(a.frontmatter.date)
+    );
 }
