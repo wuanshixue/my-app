@@ -59,7 +59,7 @@ export default function ContactPage(){
                 {/* Name */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <lable className="block font-medium">First Name<span className="text-red-500">*</span></lable>
+                        <label className="block font-medium">First Name<span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             name="firstName"
