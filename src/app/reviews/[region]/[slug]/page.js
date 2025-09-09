@@ -1,23 +1,37 @@
-import {getPostBySlug} from "@/lib/mdx";
-import {MDXRemote} from "next-mdx-remote/rsc";
-import {formatDate} from "next-mdx-remote/rsc";
-import {applyNextWorkerFixture} from "next/dist/experimental/testmode/playwright/next-worker-fixture";
+import { getPostBySlug } from "@/lib/mdx";
+import { MDXRemote } from "next-mdx-remote/rsc";
 
+export default async function PostPage({ params }) {
+    const { region, slug } = await params;
 
-export default function PostPage({params}){
-    const{region,slug}=params;
-    const { content, frontmatter } = getPostBySlug(region, slug);
+    // 读取文章
+    const { meta, content } = getPostBySlug(region, slug);
 
-    // 编译 MDX
-    const{content:mdxContent}=applyNextWorkerFixture({
-        source:content,
-    });
+    if (!meta) {
+        return <p className="text-center py-10">Post not found.</p>;
+    }
 
-    return(
-        <article className="max-w-3xl mx-auto p-6 prose">
-            <h1 className="text-4xl font-bold mb-4">{frontmatter.title}</h1>
-            <p className="text-gray-500 mb-6">{frontmatter.date}</p>
-            <MDXRemote source={content}/>
-        </article>
-    )
+    return (
+        <main className="max-w-3xl mx-auto px-4 py-10">
+            {/* 标题 */}
+            <h1 className="text-3xl font-bold mb-2">{meta.title}</h1>
+            <p className="text-gray-500 text-sm mb-6">
+                {meta.date} · {meta.author}
+            </p>
+
+            {/* 如果有封面图 */}
+            {meta.image && (
+                <img
+                    src={meta.image}
+                    alt={meta.title}
+                    className="rounded mb-6"
+                />
+            )}
+
+            {/* 正文内容 */}
+            <article className="prose prose-lg">
+                <MDXRemote source={content} />
+            </article>
+        </main>
+    );
 }

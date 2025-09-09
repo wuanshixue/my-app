@@ -22,9 +22,9 @@ export default function RegionPage({params}){
                             href={`/reviews/${region}/${post.slug}`}
                             className="text-blue-600 hover:underline"
                         >
-                            {post.frontmatter.title || post.slug}
+                            {post.meta.title || post.slug}
                         </Link>
-                        <p className="text-gray-500">{post.frontmatter.date}</p>
+                        <p className="text-gray-500">{post.meta.date}</p>
                     </li>
                 ))}
             </ul>
