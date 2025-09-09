@@ -1,13 +1,12 @@
 import { getPosts } from "@/lib/mdx";
 import Link from "next/link";
 
+export default async function RegionPage({ params }) {
+    const { region } = await params; // ✅ await 访问
+    const posts = getPosts(region); // 如果异步：await getPosts(region)
 
-export default function RegionPage({params}){
-    const{region}=params;
-    const posts=getPosts(region);
-
-    if(!posts.length){
-        return <p className="p-6">No posts found for {region}</p>
+    if (!posts.length) {
+        return <p className="p-6">No posts found for {region}</p>;
     }
 
     return (
@@ -16,7 +15,7 @@ export default function RegionPage({params}){
                 Reviews in {region}
             </h1>
             <ul className="space-y-4">
-                {posts.map((post)=>(
+                {posts.map((post) => (
                     <li key={post.slug}>
                         <Link
                             href={`/reviews/${region}/${post.slug}`}
@@ -29,5 +28,5 @@ export default function RegionPage({params}){
                 ))}
             </ul>
         </div>
-    )
+    );
 }
