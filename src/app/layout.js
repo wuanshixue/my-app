@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
 
       <main className="max-w-3xl mx-auto p-6">{children}</main>
       <footer className="text-center py-4 text-sm text-gray-500">
-        &copy; {new Date().getFullYear()}My Blog. All rights reserved.
+        &copy; {new Date().getFullYear()}Coffee Wuanshixue. All rights reserved.
       </footer>
     </body>
     </html>
