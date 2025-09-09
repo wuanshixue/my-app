@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
-import Header from "./components/Header";
+import Link from "next/link";
+import Navbar from "./components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,16 +14,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "My Dick",
-  description: "dick dick dick",
+  title: "Coffee Bolg",
+  description: "Coffee Bolg",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-    <body>
-      <Header/>
-      <main className="p-6">{children}</main>
+    <body className="bg-gray-50 text-gray-800 font-sans">
+      <Navbar />
+
+
+      <main className="max-w-3xl mx-auto p-6">{children}</main>
+      <footer className="text-center py-4 text-sm text-gray-500">
+        &copy; {new Date().getFullYear()}My Blog. All rights reserved.
+      </footer>
     </body>
     </html>
   );
