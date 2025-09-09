@@ -27,13 +27,13 @@ export default function Navbar() {
                         </button>
                         {isRegionOpen && (
                             <div className="absolute mt-2 w-48 bg-white border shadow rounded">
-                                <Link href="/region/asia" className="block px-4 py-2 hover:bg-gray-100">
-                                    Asia
-                                </Link>
-                                <Link href="/region/africa" className="block px-4 py-2 hover:bg-gray-100">
+                                <Link href="/reviews/africa" className="block px-4 py-2 hover:bg-gray-100">
                                     Africa
                                 </Link>
-                                <Link href="/region/latin-america" className="block px-4 py-2 hover:bg-gray-100">
+                                <Link href="/reviews/asia" className="block px-4 py-2 hover:bg-gray-100">
+                                    Asia
+                                </Link>
+                                <Link href="/reviews/latin-america" className="block px-4 py-2 hover:bg-gray-100">
                                     Latin America
                                 </Link>
                             </div>
