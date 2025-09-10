@@ -23,8 +23,11 @@ export function getPostsByRegion(region) {
             const { data: frontmatter } = matter(fileContents);
 
             return {
-                slug,
-                region,
+                slug,                          // 文件名
+                region,                        // 所属地区
+                title: frontmatter.title || slug, // 用 title 做搜索关键词
+                excerpt: frontmatter.excerpt || "", // 方便搜索结果展示
+                date: frontmatter.date || null,
                 frontmatter,
             };
         });
@@ -34,6 +37,8 @@ export function getPostsByRegion(region) {
  * 获取所有文章（跨地区）
  */
 export function getAllPosts() {
+    if (!fs.existsSync(contentDir)) return [];
+
     const regions = fs.readdirSync(contentDir).filter((file) =>
         fs.statSync(path.join(contentDir, file)).isDirectory()
     );
@@ -46,6 +51,6 @@ export function getAllPosts() {
 
     // 按日期倒序排序
     return posts.sort(
-        (a, b) => new Date(b.frontmatter.date) - new Date(a.frontmatter.date)
+        (a, b) => new Date(b.date) - new Date(a.date)
     );
 }

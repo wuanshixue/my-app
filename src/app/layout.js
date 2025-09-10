@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import Navbar from "./components/Navbar";
+import { getAllPosts } from "@/lib/posts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,13 +24,19 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
+  const posts = getAllPosts(); // ✅ 服务端取 posts
+
   return (
     <html lang="en">
     <body className="bg-gray-50 text-gray-800 font-sans">
-      <Navbar />
+      <Navbar posts={posts} />
 
+      <div className="container mx-auto px-4">
+        <main className="max-w-3xl mx-auto p-6">
+          {children}
+        </main>
+      </div>
 
-      <main className="max-w-3xl mx-auto p-6">{children}</main>
       <footer className="text-center py-4 text-sm text-gray-500">
         &copy; {new Date().getFullYear()}Coffee Wuanshixue. All rights reserved.
       </footer>
