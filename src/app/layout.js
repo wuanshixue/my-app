@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
-import Link from "next/link";
 import Navbar from "./components/Navbar";
 
 const geistSans = Geist({
@@ -16,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Coffee Bolg",
   description: "Coffee Bolg",
+  viewport: "width=device-width, initial-scale=1.0",
 };
 
 export default function RootLayout({ children }) {
