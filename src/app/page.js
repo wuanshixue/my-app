@@ -4,7 +4,7 @@ import Image from "next/image";
 import { getAllPosts } from "@/lib/posts";
 
 export const metadata = {
-    title: "Home | Coffee Wuanshixue",
+    title: "Coffee Wuanshixue",
     description: "Discover coffee reviews, advice, and brewing guides.",
 };
 
@@ -18,7 +18,14 @@ export default function HomePage() {
 
     return (
         <main className="max-w-5xl mx-auto px-4 py-6">
-            <h1 className="text-xl font-bold mb-6">最新文章</h1>
+            {/* 顶部标题区域 */}
+            <header className="text-center mb-8 pb-4 border-b">
+                <h1 className="text-3xl font-serif font-bold">Coffee Wuanshixue</h1>
+                <p className="text-gray-600 text-lg mt-1">Coffee: Music in a cup!</p>
+            </header>
+
+            {/* 最新文章列表 */}
+            <h2 className="text-xl font-bold mb-6">最新文章</h2>
             <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {posts.map((post) => {
                     const cover =

@@ -23,6 +23,7 @@ export const viewport = {
   initialScale: 1,
 };
 
+
 export default function RootLayout({ children }) {
   const posts = getAllPosts(); // ✅ 服务端取 posts
 

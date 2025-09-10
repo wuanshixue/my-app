@@ -5,52 +5,63 @@ import matter from "gray-matter";
 const contentDir = path.join(process.cwd(), "src", "content");
 
 /**
- * 获取某个地区的所有文章
+ * 通用获取文章函数
+ * @param {Object} options
+ * @param {string} [options.region] - 指定地区
+ * @param {string} [options.category] - 指定分类
+ * @param {string} [options.subCategory] - 指定子分类
  */
-export function getPostsByRegion(region) {
-    const regionDir = path.join(contentDir, region);
 
-    if (!fs.existsSync(regionDir)) return [];
+export function getPostsUnified({ region, category, subCategory } = {}) {
+    let targetDir;
 
-    const fileNames = fs.readdirSync(regionDir);
+    if (region) {
+        // 按地区
+        targetDir = path.join(contentDir, region);
+    } else if (category) {
+        // 按分类/子分类
+        const baseDir = path.join(contentDir, category);
+        targetDir = subCategory ? path.join(baseDir, subCategory) : baseDir;
+    } else {
+        // 默认获取所有内容
+        if (!fs.existsSync(contentDir)) return [];
+        const dirs = fs.readdirSync(contentDir).filter((file) =>
+            fs.statSync(path.join(contentDir, file)).isDirectory()
+        );
 
-    return fileNames
-        .filter((file) => file.endsWith(".md") || file.endsWith(".mdx"))
-        .map((file) => {
-            const slug = file.replace(/\.mdx?$/, "");
-            const fullPath = path.join(regionDir, file);
-            const fileContents = fs.readFileSync(fullPath, "utf8");
-            const { data: frontmatter } = matter(fileContents);
-
-            return {
-                slug,                          // 文件名
-                region,                        // 所属地区
-                title: frontmatter.title || slug, // 用 title 做搜索关键词
-                excerpt: frontmatter.excerpt || "", // 方便搜索结果展示
-                date: frontmatter.date || null,
-                frontmatter,
-            };
+        let allPosts = [];
+        dirs.forEach((dir) => {
+            allPosts = allPosts.concat(getPostsUnified({ region: dir }));
         });
-}
 
-/**
- * 获取所有文章（跨地区）
- */
-export function getAllPosts() {
-    if (!fs.existsSync(contentDir)) return [];
+        // 按日期倒序
+        return allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
 
-    const regions = fs.readdirSync(contentDir).filter((file) =>
-        fs.statSync(path.join(contentDir, file)).isDirectory()
+    if (!fs.existsSync(targetDir)) return [];
+
+    const files = fs.readdirSync(targetDir).filter(
+        (file) => file.endsWith(".md") || file.endsWith(".mdx")
     );
 
-    let posts = [];
+    return files.map((file) => {
+        const filePath = path.join(targetDir, file);
+        const fileContents = fs.readFileSync(filePath, "utf8");
+        const { data: frontmatter, content } = matter(fileContents);
 
-    regions.forEach((region) => {
-        posts = posts.concat(getPostsByRegion(region));
+        const slug = file.replace(/\.mdx?$/, "");
+        return {
+            slug,
+            region: region || null,
+            category: category || null,
+            subCategory: subCategory || null,
+            title: frontmatter.title || slug,
+            excerpt: frontmatter.excerpt || "",
+            date: frontmatter.date || null,
+            frontmatter,
+            content,
+        };
     });
 
-    // 按日期倒序排序
-    return posts.sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-    );
 }
+export const getAllPosts = () => getPostsUnified();

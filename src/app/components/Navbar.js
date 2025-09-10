@@ -36,17 +36,8 @@ export default function Navbar({ posts }) {
                         ]}
                     />
                     <Dropdown
-                        label="REVIEWS BY BREW METHOD"
-                        items={[
-                            { href: "/brew/pour-over", label: "Pour Over" },
-                            { href: "/brew/espresso", label: "Espresso" },
-                            { href: "/brew/french-press", label: "French Press" },
-                        ]}
-                    />
-                    <Dropdown
                         label="ADVICE"
                         items={[
-                            { href: "/advice/brewing-tips", label: "Brewing Tips" },
                             { href: "/advice/bean-selection", label: "Bean Selection" },
                             { href: "/advice/storage", label: "Storage" },
                         ]}
@@ -119,17 +110,8 @@ export default function Navbar({ posts }) {
                                 ]}
                             />
                             <MobileDropdown
-                                label="REVIEWS BY BREW METHOD"
-                                items={[
-                                    { href: "/brew/pour-over", label: "Pour Over" },
-                                    { href: "/brew/espresso", label: "Espresso" },
-                                    { href: "/brew/french-press", label: "French Press" },
-                                ]}
-                            />
-                            <MobileDropdown
                                 label="ADVICE"
                                 items={[
-                                    { href: "/advice/brewing-tips", label: "Brewing Tips" },
                                     { href: "/advice/bean-selection", label: "Bean Selection" },
                                     { href: "/advice/storage", label: "Storage" },
                                 ]}
