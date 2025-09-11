@@ -12,7 +12,7 @@ export default function Navbar({ posts }) {
         query.trim() === ""
             ? []
             : posts.filter((post) =>
-                post.frontmatter.title
+                (post.title || "")
                     .toLowerCase()
                     .includes(query.toLowerCase())
             );
@@ -35,13 +35,10 @@ export default function Navbar({ posts }) {
                             { href: "/reviews/latin-america", label: "Latin America" },
                         ]}
                     />
-                    <Dropdown
-                        label="ADVICE"
-                        items={[
-                            { href: "/advice/bean-selection", label: "Bean Selection" },
-                            { href: "/advice/storage", label: "Storage" },
-                        ]}
-                    />
+                    {/* ✅ ADVICE 改成单独 Link */}
+                    <Link href="/reviews/advice" className="hover:text-gray-600">
+                        ADVICE
+                    </Link>
                     <Link href="/contact" className="hover:text-gray-600">
                         CONTACT
                     </Link>
@@ -63,10 +60,14 @@ export default function Navbar({ posts }) {
                             {filteredPosts.map((post) => (
                                 <Link
                                     key={post.slug}
-                                    href={`/reviews/${post.region}/${post.slug}`}
+                                    href={
+                                        post.base === "reviews"
+                                            ? `/reviews/${post.region}/${post.slug}`
+                                            : `/advice/${post.slug}`
+                                    }
                                     className="block px-4 py-2 hover:bg-gray-100 text-sm"
                                 >
-                                    {post.frontmatter.title}
+                                    {post.title || post.slug}
                                 </Link>
                             ))}
                         </div>
@@ -109,13 +110,13 @@ export default function Navbar({ posts }) {
                                     { href: "/reviews/latin-america", label: "Latin America" },
                                 ]}
                             />
-                            <MobileDropdown
-                                label="ADVICE"
-                                items={[
-                                    { href: "/advice/bean-selection", label: "Bean Selection" },
-                                    { href: "/advice/storage", label: "Storage" },
-                                ]}
-                            />
+                            {/* ✅ ADVICE 改成单独 Link */}
+                            <Link
+                                href="/reviews/advice"
+                                className="block h-10 px-4 py-2 hover:bg-gray-100"
+                            >
+                                ADVICE
+                            </Link>
                             <Link
                                 href="/contact"
                                 className="block h-10 px-4 py-2 hover:bg-gray-100"
@@ -140,10 +141,14 @@ export default function Navbar({ posts }) {
                                     {filteredPosts.map((post) => (
                                         <Link
                                             key={post.slug}
-                                            href={`/reviews/${post.region}/${post.slug}`}
+                                            href={
+                                                post.base === "reviews"
+                                                    ? `/reviews/${post.region}/${post.slug}`
+                                                    : `/advice/${post.slug}`
+                                            }
                                             className="block px-4 py-2 hover:bg-gray-100 text-sm"
                                         >
-                                            {post.frontmatter.title}
+                                            {post.title || post.slug}
                                         </Link>
                                     ))}
                                 </div>

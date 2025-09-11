@@ -6,17 +6,21 @@ import { getAllPosts } from "@/lib/posts";
 export default async function HomePage() {
     const posts = getAllPosts("reviews");
 
-    // ✅ 按日期排序
-    const sortedPosts = posts.sort(
+    // 只显示 africa、latin-america、asian 分类
+    const allowedRegions = ["africa", "latin-america", "asian"];
+    const filteredPosts = posts.filter(post => allowedRegions.includes(post.region));
+
+    // 按日期排序
+    const sortedPosts = filteredPosts.sort(
         (a, b) => new Date(b.date) - new Date(a.date)
     );
 
-    // ✅ 取前 5 篇最新
-    const latestPosts = sortedPosts.slice(0, 5);
+    // 取前 7 篇最新
+    const latestPosts = sortedPosts.slice(0, 7);
 
     return (
         <main className="max-w-4xl mx-auto px-4 py-8">
-            <h2 className="text-2xl font-bold mb-8 text-center">最新文章</h2>
+            <h2 className="text-2xl font-bold mb-8 text-left">最新文章</h2>
 
             <ul className="grid gap-12 grid-cols-1">
                 {latestPosts.map((post) => {
@@ -28,7 +32,6 @@ export default async function HomePage() {
                             key={post.slug}
                             className="overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300"
                         >
-                            {/* 封面图 */}
                             {cover && (
                                 <Link href={`/reviews/${post.region}/${post.slug}`}>
                                     <Image
@@ -42,7 +45,6 @@ export default async function HomePage() {
                                 </Link>
                             )}
 
-                            {/* 文章信息 */}
                             <div className="p-6 text-center">
                                 <Link
                                     href={`/reviews/${post.region}/${post.slug}`}
