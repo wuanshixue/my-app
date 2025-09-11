@@ -21,8 +21,8 @@ export async function generateStaticParams() {
     return paths;
 }
 
-export default function AdvicePostPage({ params }) {
-    const { topic, slug } = params;
+export default async function AdvicePostPage({ params }) {
+    const { topic, slug } = await params;
 
     const baseDir = path.join(process.cwd(), "src", "content", "advice", topic);
 
