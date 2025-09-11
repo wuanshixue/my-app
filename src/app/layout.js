@@ -34,6 +34,10 @@ export default function RootLayout({ children }) {
 
       <div className="container mx-auto px-4">
         <main className="max-w-3xl mx-auto p-6">
+          <header className="text-center mb-8 pb-4 border-b">
+            <h1 className="text-3xl font-serif font-bold">Coffee Wuanshixue</h1>
+            <p className="text-gray-600 text-lg mt-1">Coffee: Music in a cup!</p>
+          </header>
           {children}
         </main>
       </div>
