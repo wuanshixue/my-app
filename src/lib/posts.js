@@ -2,66 +2,79 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-const contentDir = path.join(process.cwd(), "src", "content");
+const rootDir = path.join(process.cwd(), "src", "content");
 
 /**
  * 通用获取文章函数
  * @param {Object} options
- * @param {string} [options.region] - 指定地区
- * @param {string} [options.category] - 指定分类
- * @param {string} [options.subCategory] - 指定子分类
+ * @param {string} options.base - 必须传入 ('reviews' | 'advice')
+ * @param {string} [options.topic] - advice 的分类 (bean-selection, storage...)
+ * @param {string} [options.region] - reviews 的地区 (africa, asia...)
  */
-
-export function getPostsUnified({ region, category, subCategory } = {}) {
-    let targetDir;
-
-    if (region) {
-        // 按地区
-        targetDir = path.join(contentDir, region);
-    } else if (category) {
-        // 按分类/子分类
-        const baseDir = path.join(contentDir, category);
-        targetDir = subCategory ? path.join(baseDir, subCategory) : baseDir;
-    } else {
-        // 默认获取所有内容
-        if (!fs.existsSync(contentDir)) return [];
-        const dirs = fs.readdirSync(contentDir).filter((file) =>
-            fs.statSync(path.join(contentDir, file)).isDirectory()
-        );
-
-        let allPosts = [];
-        dirs.forEach((dir) => {
-            allPosts = allPosts.concat(getPostsUnified({ region: dir }));
-        });
-
-        // 按日期倒序
-        return allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+export function getPostsUnified({ base, topic, region } = {}) {
+    if (!base) {
+        throw new Error("必须传入 base 参数（如 'reviews' 或 'advice'）");
     }
 
-    if (!fs.existsSync(targetDir)) return [];
+    // base 层级目录
+    let targetDir = path.join(rootDir, base);
 
-    const files = fs.readdirSync(targetDir).filter(
-        (file) => file.endsWith(".md") || file.endsWith(".mdx")
-    );
+    // 针对 reviews 和 advice 的不同子目录处理
+    if (base === "reviews" && region) {
+        targetDir = path.join(targetDir, region);
+    }
+    if (base === "advice" && topic) {
+        targetDir = path.join(targetDir, topic);
+    }
+
+    if (!fs.existsSync(targetDir)) {
+        return [];
+    }
+
+    // 支持 .md 和 .mdx
+    const files = fs.readdirSync(targetDir).filter((f) => f.endsWith(".md") || f.endsWith(".mdx"));
 
     return files.map((file) => {
-        const filePath = path.join(targetDir, file);
-        const fileContents = fs.readFileSync(filePath, "utf8");
-        const { data: frontmatter, content } = matter(fileContents);
+        const fullPath = path.join(targetDir, file);
+        const source = fs.readFileSync(fullPath, "utf-8");
+        const { data, content } = matter(source);
 
-        const slug = file.replace(/\.mdx?$/, "");
         return {
-            slug,
-            region: region || null,
-            category: category || null,
-            subCategory: subCategory || null,
-            title: frontmatter.title || slug,
-            excerpt: frontmatter.excerpt || "",
-            date: frontmatter.date || null,
-            frontmatter,
+            slug: file.replace(/\.mdx?$/, ""),
+            ...data,
             content,
+            region: region || null,
+            topic: topic || null,
         };
     });
-
 }
-export const getAllPosts = () => getPostsUnified();
+
+/**
+ * 获取某个 base 下所有文章（reviews 或 advice 全量）
+ */
+export function getAllPosts(base = "reviews") {
+    if (!base) {
+        throw new Error("必须传入 base 参数（如 'reviews' 或 'advice'）");
+    }
+
+    const baseDir = path.join(rootDir, base);
+    if (!fs.existsSync(baseDir)) return [];
+
+    // 遍历 base 下所有子目录
+    const subDirs = fs
+        .readdirSync(baseDir)
+        .filter((f) => fs.statSync(path.join(baseDir, f)).isDirectory());
+
+    let allPosts = [];
+    subDirs.forEach((sub) => {
+        if (base === "reviews") {
+            allPosts = allPosts.concat(getPostsUnified({ base, region: sub }));
+        }
+        if (base === "advice") {
+            allPosts = allPosts.concat(getPostsUnified({ base, topic: sub }));
+        }
+    });
+
+    // 按日期倒序
+    return allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
