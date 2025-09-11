@@ -15,11 +15,10 @@ export default async function HomePage() {
     const latestPosts = sortedPosts.slice(0, 5);
 
     return (
-        <main className="max-w-5xl mx-auto px-4 py-6">
+        <main className="max-w-4xl mx-auto px-4 py-8">
+            <h2 className="text-2xl font-bold mb-8 text-center">最新文章</h2>
 
-
-            <h2 className="text-xl font-bold mb-6">最新文章</h2>
-            <ul className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+            <ul className="grid gap-12 grid-cols-1">
                 {latestPosts.map((post) => {
                     const cover =
                         post.image || (post.images?.length > 0 ? post.images[0] : null);
@@ -27,29 +26,37 @@ export default async function HomePage() {
                     return (
                         <li
                             key={post.slug}
-                            className="border rounded-xl p-4 shadow hover:shadow-lg"
+                            className="overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300"
                         >
+                            {/* 封面图 */}
                             {cover && (
-                                <Image
-                                    src={cover}
-                                    alt={post.title || post.slug}
-                                    width={200}
-                                    height={200}
-                                    className="w-full h-auto rounded-xl mb-3"
-                                />
+                                <Link href={`/reviews/${post.region}/${post.slug}`}>
+                                    <Image
+                                        src={cover}
+                                        alt={post.title || post.slug}
+                                        width={800}
+                                        height={400}
+                                        className="w-full h-64 object-cover"
+                                        priority
+                                    />
+                                </Link>
                             )}
-                            <Link
-                                href={`/reviews/${post.region}/${post.slug}`}
-                                className="text-base font-semibold text-blue-600 hover:underline block h-10"
-                            >
-                                {post.title || post.slug}
-                            </Link>
-                            <p className="text-gray-500 text-xs mt-1">
-                                {post.date} • {post.author}
-                            </p>
-                            <p className="mt-2 text-gray-700 text-sm line-clamp-3">
-                                {post.excerpt}
-                            </p>
+
+                            {/* 文章信息 */}
+                            <div className="p-6 text-center">
+                                <Link
+                                    href={`/reviews/${post.region}/${post.slug}`}
+                                    className="text-2xl font-bold font-serif text-gray-900 hover:text-blue-600 transition-colors"
+                                >
+                                    {post.title || post.slug}
+                                </Link>
+                                <p className="text-gray-500 text-sm mt-2">
+                                    {post.date} • {post.author}
+                                </p>
+                                <p className="mt-4 text-gray-700 text-base leading-relaxed max-w-2xl mx-auto">
+                                    {post.excerpt}
+                                </p>
+                            </div>
                         </li>
                     );
                 })}
