@@ -21,7 +21,11 @@ export function getPostsUnified({ base, topic, region } = {}) {
 
     // 针对 reviews 和 advice 的不同子目录处理
     if (base === "reviews" && region) {
-        targetDir = path.join(targetDir, region);
+        // ✅ 如果 content 下没有 reviews 目录，而是直接放 region
+        const regionDir = path.join(rootDir, region);
+        targetDir = fs.existsSync(regionDir)
+            ? regionDir // 兼容 src/content/africa/xxx.mdx
+            : path.join(targetDir, region); // 兼容 src/content/reviews/africa/xxx.mdx
     }
     if (base === "advice" && topic) {
         targetDir = path.join(targetDir, topic);
@@ -43,8 +47,9 @@ export function getPostsUnified({ base, topic, region } = {}) {
             slug: file.replace(/\.mdx?$/, ""),
             ...data,
             content,
-            region: region || null,
-            topic: topic || null,
+            base, // ✅ 标记属于 reviews 还是 advice
+            region: base === "reviews" ? region : null, // ✅ 修复 null 问题
+            topic: base === "advice" ? topic : null,
         };
     });
 }
@@ -58,9 +63,25 @@ export function getAllPosts(base = "reviews") {
     }
 
     const baseDir = path.join(rootDir, base);
+
+    // ✅ reviews 兼容没有 reviews 目录的情况
+    if (base === "reviews" && !fs.existsSync(baseDir)) {
+        // 直接扫描 content 下的所有子目录（africa, asia...）
+        const regions = fs
+            .readdirSync(rootDir)
+            .filter((f) => fs.statSync(path.join(rootDir, f)).isDirectory());
+
+        let allPosts = [];
+        regions.forEach((region) => {
+            allPosts = allPosts.concat(getPostsUnified({ base, region }));
+        });
+
+        return allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    // ✅ advice 或者 reviews 存在子目录
     if (!fs.existsSync(baseDir)) return [];
 
-    // 遍历 base 下所有子目录
     const subDirs = fs
         .readdirSync(baseDir)
         .filter((f) => fs.statSync(path.join(baseDir, f)).isDirectory());
@@ -75,6 +96,5 @@ export function getAllPosts(base = "reviews") {
         }
     });
 
-    // 按日期倒序
     return allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
 }

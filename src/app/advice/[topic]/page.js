@@ -18,15 +18,15 @@ export async function generateStaticParams() {
 /**
  * params.topic 是路由参数，例如 /advice/coffee 对应 topic="coffee"
  */
-export default function AdviceTopicPage({ params }) {
-    const { topic } = params;
+export default async function AdviceTopicPage({ params }) {
+    const { topic } = await params;
     // 获取当前 topic 下的文章
     const posts = getPostsUnified({ base: "advice", topic });
 
 
     return (
         <div>
-            <h1>Advice topic: {params.topic}</h1>
+            <h1>Advice topic: {topic}</h1>
             <ul>
                 {posts.map((post) => (
                     <li key={post.slug}>
